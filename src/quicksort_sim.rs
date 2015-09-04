@@ -1,53 +1,65 @@
+// extern crate rand;
+
+// use rand::random;
 /// Rust code to perform quick sort on Vec<i32>
 
-fn get_pivot_element(beg: i32, end: i32) -> i32 {
-	(beg + end)/2
+// Return middle element of the array under consideration to be the pivot
+fn get_pivot_element(len: usize) -> usize {
+	(len)/2
 }
 
-fn partition(arr: &mut Vec<i32>, beg: i32, end: i32, pivot_pos: i32) -> i32 {
-	arr.swap(beg as usize, pivot_pos as usize);
-	let mut i = beg + 1;
-	let mut j = i;
+fn partition(arr: &mut [i32], len: usize, pivot_pos: usize) -> usize {
+	arr.swap(0, pivot_pos);
+	let mut i: usize = 1;
+	let mut j: usize = i;
 
 	// get pivot element to the first location
 	let pivot = arr[0];
 
-	while j <= end {
-		if arr[j as usize] < pivot {
-			arr.swap(i as usize, j as usize);
+	while j < len {
+		if arr[j] < pivot {
+			arr.swap(i, j);
 			i += 1;
 		}
 		j += 1;
 	}
-	arr.swap(beg as usize , (i - 1) as usize);
-	//i = i - 1;
-	println!("array: {:?}", arr);
-	println!("{:?}  {:?}  {:?}", beg, end, i);
-	// panic!();
-	if i == beg {
-		return beg + 1;
-	}
-	if i == end {
-		return end - 1;
-	}
+	arr.swap(0 , i - 1);
+
 	return i;
 }
 
-fn sort(arr: &mut Vec<i32>, beg: i32, end: i32) {
-	if end - beg <= 1 {
+// Actual quick sort function, recursively calls itself after partitioning the array around the first middle element of the array
+// TODO: change the middle element to the element from a randomly generated index
+fn sort(arr: &mut [i32], len: usize) {
+	if len < 2 {
 		return;
 	}
 
-	let pivot_pos = get_pivot_element(beg, end);
-	let part = partition(arr, beg, end, pivot_pos);
+	let pivot_pos = get_pivot_element(len);
+	let part = partition(arr, len, pivot_pos);
 
-	sort(arr, beg, part - 1);
-	sort(arr, part, end);
+	if part == len {
+		sort(&mut arr[0..(part - 1)], part - 1);
+		return;
+	}
+	else if part == 1 {
+		sort(&mut arr[1..len], len - 1);
+		return;
+	}
+	sort(&mut arr[0..(part - 1)], part - 1);
+	sort(&mut arr[part..len], len - part);
 }
 
 fn main() {
-	let mut v = vec![10, 20, 23423, 83, 5, 4, 3, 2, 1];
-	sort(&mut v, 0, 8);
+	// let mut v = [0..100];
+	// for index in 0..100 {
+	// 	v[index] = random::<i32>() % 1000;
+	// }
 
+	let mut v = [3, 4, 2, 1, 6, 13, 16, 12, 86, 72, 62, 14, 62];
+	let len = v.len();
+	println!("Initial array     : {:?}", v);
+	sort(&mut v, len);
 
+	println!("Final sorted array: {:?}", v);
 }
